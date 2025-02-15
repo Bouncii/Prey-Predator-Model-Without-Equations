@@ -1,150 +1,120 @@
-# 0 = case vide
-# 1 = proie
-# 2 = prédateur
-
 from random import randint
 
 # Création de l'environnement
-
-largeur=5
-longueur=5
-environnement=[[0 for j in range(largeur)] for i in range(longueur) ]
-
-
+largeur = 5
+longueur = 5
+environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
 ######################################################################################
 # Création de la classe Proie
 
 class Proie:
-    def __init__(self,x:int,y:int,nrproie:int):
-        self.x=x
-        self.y=y
-        self.vie=True
-        self.nrproie=nrproie
-        self.reproduction=0
-
+    def __init__(self, x: int, y: int, nrproie: int):
+        self.x = x
+        self.y = y
+        self.vie = True
+        self.nrproie = nrproie
+        self.reproduction = 0
 
 ######################################################################################
 # Création de la classe Prédateur
 
 class Predateur:
-    def __init__(self,x:int,y:int,n_faim:int):
-        self.x=x
-        self.y=y
-        self.vie=True
-        self.reproduction=0
-        self.n_faim=n_faim
-        self.décompte_faim=n_faim
-    
+    def __init__(self, x: int, y: int, n_faim: int):
+        self.x = x
+        self.y = y
+        self.vie = True
+        self.reproduction = 0
+        self.n_faim = n_faim
+        self.décompte_faim = n_faim
+
     def afficher(self):
-        '''Fonction qui permet d'afficher le predateur sur la grille'''
-        environnement[self.y][self.x]=2
+        '''Afficher le prédateur sur la grille uniquement s'il est vivant'''
+        if self.vie:
+            environnement[self.y][self.x] = 2
 
-    def se_deplacer(self,environnement:list,tab_proie:list):
-        '''Fonction qui permet au prédateur de se déplacer'''
+    def se_deplacer(self, environnement: list, tab_proie: list):
+        '''Le prédateur se déplace et meurt immédiatement s'il a faim'''
+        if not self.vie:
+            return
 
-        direction=randint(0,3) # On choisit une direction aléatoire
-        while verification_direction_bordures(self,direction,environnement)==False: # On change de direction si le prédateur est sur les bordures et s'apprète à sortir
-            direction=randint(0,3)
+        direction = randint(0, 3)
+        while not verification_direction_bordures(self, direction, environnement):
+            direction = randint(0, 3)
 
-        
-            
-
-
-        self.mort_faim()
-
-
-        if direction==0: # On calcul les nouvelles coordonnées du prédateur
-            new_x=self.x
-            new_y=self.y+1
-        elif direction==1:
-            new_x=self.x
-            new_y=self.y-1
-
-        elif direction==2:
-            new_x=self.x+1
-            new_y=self.y
+        if direction == 0:
+            new_x = self.x
+            new_y = self.y + 1
+        elif direction == 1:
+            new_x = self.x
+            new_y = self.y - 1
+        elif direction == 2:
+            new_x = self.x + 1
+            new_y = self.y
         else:
-            new_x=self.x-1
-            new_y=self.y
-    
-        self.verification_mange_proie(environnement,new_x,new_y) # On vérifie si le prédateur mange une proie lors de son futut déplacement
+            new_x = self.x - 1
+            new_y = self.y
 
+        self.verification_mange_proie(environnement, new_x, new_y, tab_proie)
 
+        if self.décompte_faim == 0: # Mort de faim
+            self.vie = False  
 
-        self.x=new_x
-        self.y=new_y
+        if self.vie:  # Ne pas déplacer s'il est mort
+            self.x = new_x
+            self.y = new_y
 
+    def verification_mange_proie(self, environnement: list, new_x: int, new_y: int, tab_proie: list):
+        '''Le prédateur mange une proie et réinitialise sa faim'''
+        for proie in tab_proie[:]:  # Copie pour éviter modification en boucle
+            if proie.x == new_x and proie.y == new_y:
+                tab_proie.remove(proie)  # La proie est mangée
+                self.décompte_faim = self.n_faim
 
-    def verification_mange_proie(self,environnement:list,new_x:int,new_y:int):
-        '''Fonction qui permet au prédateur de manger une proie'''
-
-        if environnement[new_y][new_x]==1:
-            self.décompte_faim=self.n_faim
-
-        else:
-            self.décompte_faim-=1
-
-
-    def mort_faim(self):
-        '''Fonction qui permet de savoir si le prédateur est mort'''
-        if self.décompte_faim==0:
-            self.vie=False
-
+        self.décompte_faim -= 1  # Réduction de la faim si rien n'a été mangé
 
 ######################################################################################
 # Fonctions utiles
 
-def afficher_environnement(environnement:list):
-    '''Fonction qui permet d'afficher l'environnement'''
+def afficher_environnement(environnement: list):
+    '''Affichage de la grille'''
     print()
     for ligne in environnement:
         print(ligne)
     print()
 
-def verification_direction_bordures(self,direction:int,environnement:list):
-    '''Fonction qui permet de vérifier si le prédateur ne sort pas des bordures'''
-    if direction==0:
-        if self.y+1>len(environnement)-1:
-            return False
-        else:
-            return True
-    elif direction==1:
-        if self.y-1<0:
-            return False
-        else:
-            return True
-    elif direction==2:
-        if self.x+1>len(environnement[0])-1:
-            return False
-        else:
-            return True
-    else:
-        if self.x-1<0:
-            return False
-        else:
-            return True
-
-
+def verification_direction_bordures(self, direction: int, environnement: list):
+    '''Empêche de sortir des bordures'''
+    if direction == 0 and self.y + 1 >= len(environnement):
+        return False
+    elif direction == 1 and self.y - 1 < 0:
+        return False
+    elif direction == 2 and self.x + 1 >= len(environnement[0]):
+        return False
+    elif direction == 3 and self.x - 1 < 0:
+        return False
+    return True
 
 ######################################################################################
 # Programme principal
-tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), 5) for i in range(0)]
-tab_pred = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), 5) for i in range(1)]
+
+tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), i) for i in range(3)]
+tab_pred = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), 5) for _ in range(1)]
 
 for i in range(6):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
-    # On fait une copie de tab_pred pour éviter les erreurs de modification pendant l'itération
-    copie_tab_pred = tab_pred[:]
-
-    for pred in copie_tab_pred:
+    for pred in tab_pred[:]:  # Copie par mesure de securité
         pred.se_deplacer(environnement, tab_proie)
-        
-        if not pred.vie: 
-            tab_pred.remove(pred)
-        else:
-            pred.afficher()
-            print(pred.x, pred.y, pred.décompte_faim)
 
+    # Suppression immédiate des prédateurs morts
+    tab_pred = [pred for pred in tab_pred if pred.vie]
+
+    # Affichage des entités restantes
+    for proie in tab_proie:
+        environnement[proie.y][proie.x] = 1
+    for pred in tab_pred:
+        pred.afficher()
+    # print(pred.x, pred.y, pred.décompte_faim) check predateurs
+    # print(tab_pred)
     afficher_environnement(environnement)
