@@ -115,6 +115,17 @@ for i in range(6):
         environnement[proie.y][proie.x] = 1
     for pred in tab_pred:
         pred.afficher()
+<<<<<<< HEAD
     # print(pred.x, pred.y, pred.décompte_faim) check predateurs
     # print(tab_pred)
     afficher_environnement(environnement)
+=======
+        print(pred.x, pred.y, pred.décompte_faim) 
+    # print(tab_pred)
+    afficher_environnement(environnement)
+
+
+# TODO Changer la manière dont son opéré les morts et organiser tout ça
+#Quand prédateurs meurent de faim, les supprimer du tableau sans le self.vie
+#Dédoublement pour apparition 
+>>>>>>> master
