@@ -1,9 +1,15 @@
 from random import randint
 
-# Création de l'environnement
+# Paramètres de l'environnement
 largeur = 5
 longueur = 5
 environnement = [[0 for j in range(largeur)] for i in range(longueur)]
+nb_itérations = 10
+
+nb_predateurs_initiale = 1
+faim_predateur_initale=5
+
+nb_proies_initiale = 3
 
 ######################################################################################
 # Création de la classe Proie
@@ -95,15 +101,14 @@ def info_predateur(predateur: Predateur):
 ######################################################################################
 # Programme principal
 
-tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), i) for i in range(3)]
-tab_predateur = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), 5) for _ in range(1)]
+tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), i) for i in range(nb_proies_initiale)]
+tab_predateur = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), faim_predateur_initale) for i in range(nb_predateurs_initiale)]
 
-for i in range(6):
+for i in range(nb_itérations):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
         predateur.se_deplacer(environnement, tab_proie)
-        info_predateur(predateur) ### info pour Test
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
             tab_predateur.remove(pred)
 
@@ -113,8 +118,10 @@ for i in range(6):
         environnement[proie.y][proie.x] = 1
 
     for pred in tab_predateur:
+        info_predateur(predateur) ### info pour Test
         pred.afficher()
-        print(pred.x, pred.y, pred.décompte_faim) 
+        
+
     afficher_environnement(environnement)
 
 
