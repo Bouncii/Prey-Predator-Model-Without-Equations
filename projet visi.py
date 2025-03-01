@@ -12,7 +12,6 @@ class Proie:
     def __init__(self, x: int, y: int, nrproie: int):
         self.x = x
         self.y = y
-        self.vie = True
         self.nrproie = nrproie
         self.reproduction = 0
 
@@ -23,20 +22,16 @@ class Predateur:
     def __init__(self, x: int, y: int, n_faim: int):
         self.x = x
         self.y = y
-        self.vie = True
         self.reproduction = 0
         self.n_faim = n_faim
         self.décompte_faim = n_faim
 
     def afficher(self):
         '''Afficher le prédateur sur la grille uniquement s'il est vivant'''
-        if self.vie:
-            environnement[self.y][self.x] = 2
+        environnement[self.y][self.x] = 2
 
     def se_deplacer(self, environnement: list, tab_proie: list):
         '''Le prédateur se déplace et meurt immédiatement s'il a faim'''
-        if not self.vie:
-            return
 
         direction = randint(0, 3)
         while not verification_direction_bordures(self, direction, environnement):
@@ -57,12 +52,9 @@ class Predateur:
 
         self.verification_mange_proie(environnement, new_x, new_y, tab_proie)
 
-        if self.décompte_faim == 0: # Mort de faim
-            self.vie = False  
-
-        if self.vie:  # Ne pas déplacer s'il est mort
-            self.x = new_x
-            self.y = new_y
+        #Déplacement du prédateur
+        self.x = new_x 
+        self.y = new_y
 
     def verification_mange_proie(self, environnement: list, new_x: int, new_y: int, tab_proie: list):
         '''Le prédateur mange une proie et réinitialise sa faim'''
@@ -71,7 +63,8 @@ class Predateur:
                 tab_proie.remove(proie)  # La proie est mangée
                 self.décompte_faim = self.n_faim
 
-        self.décompte_faim -= 1  # Réduction de la faim si rien n'a été mangé
+        # Réduction de la faim si rien n'a été mangé
+        self.décompte_faim -= 1  
 
 ######################################################################################
 # Fonctions utiles
@@ -95,6 +88,8 @@ def verification_direction_bordures(self, direction: int, environnement: list):
         return False
     return True
 
+
+
 ######################################################################################
 # Programme principal
 
@@ -107,12 +102,14 @@ for i in range(6):
     for pred in tab_pred[:]:  # Copie par mesure de securité
         pred.se_deplacer(environnement, tab_proie)
 
-    # Suppression immédiate des prédateurs morts
-    tab_pred = [pred for pred in tab_pred if pred.vie]
+        if pred.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
+            tab_pred.remove(pred)
+
 
     # Affichage des entités restantes
     for proie in tab_proie:
         environnement[proie.y][proie.x] = 1
+
     for pred in tab_pred:
         pred.afficher()
         print(pred.x, pred.y, pred.décompte_faim) 
