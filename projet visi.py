@@ -88,32 +88,33 @@ def verification_direction_bordures(self, direction: int, environnement: list):
         return False
     return True
 
-
+def info_predateur(predateur: Predateur):
+    '''Affiche les informations des prédateurs'''
+    print(f'Prédateur: x={predateur.x}, y={predateur.y}, décompte_faim={predateur.décompte_faim}')
 
 ######################################################################################
 # Programme principal
 
 tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), i) for i in range(3)]
-tab_pred = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), 5) for _ in range(1)]
+tab_predateur = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), 5) for _ in range(1)]
 
 for i in range(6):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
-    for pred in tab_pred[:]:  # Copie par mesure de securité
-        pred.se_deplacer(environnement, tab_proie)
-
-        if pred.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
-            tab_pred.remove(pred)
+    for predateur in tab_predateur[:]:  # Copie par mesure de securité
+        predateur.se_deplacer(environnement, tab_proie)
+        info_predateur(predateur) ### info pour Test
+        if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
+            tab_predateur.remove(pred)
 
 
     # Affichage des entités restantes
     for proie in tab_proie:
         environnement[proie.y][proie.x] = 1
 
-    for pred in tab_pred:
+    for pred in tab_predateur:
         pred.afficher()
         print(pred.x, pred.y, pred.décompte_faim) 
-    # print(tab_pred)
     afficher_environnement(environnement)
 
 
