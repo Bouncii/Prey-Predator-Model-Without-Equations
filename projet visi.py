@@ -23,6 +23,32 @@ class Proie:
         self.nrproie = nrproie
         self.reproduction = 0
 
+    def afficher(self):
+        '''Affiche la proie sur la grille'''
+        environnement[self.y][self.x] = 1
+
+    def se_deplacer(self, environnement: list):
+        direction = randint(0, 3)
+        while not verification_direction_bordures(self, direction, environnement):
+            direction = randint(0, 3)
+
+        if direction == 0:
+            new_x = self.x
+            new_y = self.y + 1
+        elif direction == 1:
+            new_x = self.x
+            new_y = self.y - 1
+        elif direction == 2:
+            new_x = self.x + 1
+            new_y = self.y
+        else:
+            new_x = self.x - 1
+            new_y = self.y
+
+        #Déplacement de la proie
+        self.x = new_x 
+        self.y = new_y
+
 ######################################################################################
 # Création de la classe Prédateur
 
@@ -36,11 +62,11 @@ class Predateur:
         self.décompte_faim = n_faim
 
     def afficher(self):
-        '''Afficher le prédateur sur la grille uniquement s'il est vivant'''
+        '''Affiche le prédateur sur la grille'''
         environnement[self.y][self.x] = 2
 
     def se_deplacer(self, environnement: list, tab_proie: list):
-        '''Le prédateur se déplace et meurt immédiatement s'il a faim'''
+        '''Déplacement du prédateur'''
 
         direction = randint(0, 3)
         while not verification_direction_bordures(self, direction, environnement):
@@ -66,7 +92,7 @@ class Predateur:
         self.y = new_y
 
     def verification_mange_proie(self, environnement: list, new_x: int, new_y: int, tab_proie: list):
-        '''Le prédateur mange une proie et réinitialise sa faim'''
+        '''vérifie si le prédateur mange une proie'''
         for proie in tab_proie[:]:  # Copie pour éviter modification en boucle
             if proie.x == new_x and proie.y == new_y:
                 tab_proie.remove(proie)  # La proie est mangée
@@ -86,7 +112,7 @@ def afficher_environnement(environnement: list):
     print()
 
 def verification_direction_bordures(self, direction: int, environnement: list):
-    '''Empêche de sortir des bordures'''
+    '''Vérifie si l'entité se dirige vers une bordure'''
     if direction == 0 and self.y + 1 >= len(environnement):
         return False
     elif direction == 1 and self.y - 1 < 0:
