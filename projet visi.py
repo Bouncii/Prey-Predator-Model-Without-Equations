@@ -11,6 +11,8 @@ faim_predateur_initale=5
 
 nb_proies_initiale = 3
 
+nrpred=30
+nrproie=30
 ######################################################################################
 # Création de la classe Proie
 
@@ -25,9 +27,10 @@ class Proie:
 # Création de la classe Prédateur
 
 class Predateur:
-    def __init__(self, x: int, y: int, n_faim: int):
+    def __init__(self, x: int, y: int, n_faim: int, nrpred:int):
         self.x = x
         self.y = y
+        self.nrpred=nrpred
         self.reproduction = 0
         self.n_faim = n_faim
         self.décompte_faim = n_faim
