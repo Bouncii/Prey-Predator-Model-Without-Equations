@@ -192,7 +192,6 @@ for i in range(nb_itérations):
     afficher_environnement(environnement)
 
 
-# TODO problème de supperposition proie, predateur
 # TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
 # TODO Remplacer newx et newy par un tuple
 #Dédoublement pour apparition 
