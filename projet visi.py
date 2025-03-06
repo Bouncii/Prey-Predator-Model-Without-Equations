@@ -145,6 +145,16 @@ def verification_direction_bordures(self, direction: int, environnement: list):
         return False
     return True
 
+def trouve_coordonnees_vide(environnement: list):
+    '''Trouve des coordonnées vides dans l'environnement'''
+    x = randint(0, len(environnement[0]) - 1)
+    y = randint(0, len(environnement) - 1)
+    while environnement[y][x] != 0:
+        x = randint(0, len(environnement[0]) - 1)
+        y = randint(0, len(environnement) - 1)
+    return (x, y)
+
+
 def info_predateur(predateur: Predateur):
     '''Affiche les informations des prédateurs'''
     print(f'Prédateur: x={predateur.x}, y={predateur.y}, décompte_faim={predateur.décompte_faim}')
@@ -152,8 +162,8 @@ def info_predateur(predateur: Predateur):
 ######################################################################################
 # Programme principal
 
-tab_proie = [Proie(randint(0, largeur - 1), randint(0, longueur - 1), nrproie) for i in range(nb_proies_initiale)]
-tab_predateur = [Predateur(randint(0, largeur - 1), randint(0, longueur - 1), faim_predateur_initale,nrpred) for i in range(nb_predateurs_initiale)]
+tab_proie = [Proie(trouve_coordonnees_vide(environnement)[0], trouve_coordonnees_vide(environnement)[1], nrproie) for i in range(nb_proies_initiale)]
+tab_predateur = [Predateur(trouve_coordonnees_vide(environnement)[0], trouve_coordonnees_vide(environnement)[1], faim_predateur_initale,nrpred) for i in range(nb_predateurs_initiale)]
 
 for i in range(nb_itérations):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
@@ -181,6 +191,6 @@ for i in range(nb_itérations):
     afficher_environnement(environnement)
 
 
-# TODO Changer la manière dont son opéré les morts et organiser tout ça
-#Quand prédateurs meurent de faim, les supprimer du tableau sans le self.vie
+# TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
+# TODO Remplacer newx et newy par un tuple
 #Dédoublement pour apparition 
