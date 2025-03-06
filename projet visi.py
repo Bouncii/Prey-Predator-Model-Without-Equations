@@ -168,6 +168,9 @@ tab_predateur = [Predateur(trouve_coordonnees_vide(environnement)[0], trouve_coo
 for i in range(nb_itérations):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
+    for proie in tab_proie:
+        proie.se_deplacer(environnement)
+
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
         predateur.se_deplacer(environnement, tab_proie)
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
@@ -175,8 +178,6 @@ for i in range(nb_itérations):
 
 
     # Affichage des entités restantes
-    for proie in tab_proie:
-        proie.se_deplacer(environnement)
 
     for proie in tab_proie:
         proie.afficher()
@@ -191,6 +192,7 @@ for i in range(nb_itérations):
     afficher_environnement(environnement)
 
 
+# TODO problème de supperposition proie, predateur
 # TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
 # TODO Remplacer newx et newy par un tuple
 #Dédoublement pour apparition 
