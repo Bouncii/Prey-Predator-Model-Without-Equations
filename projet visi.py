@@ -27,7 +27,7 @@ class Proie:
         '''Affiche la proie sur la grille'''
         environnement[self.y][self.x] = 1
         
-    def se_deplacer(self, environnement: list):
+    def se_deplacer(self, environnement: list,tab_predateur):
         direction = randint(0, 3)
         if direction == 0:
             new_x = self.x
@@ -42,7 +42,7 @@ class Proie:
             new_x = self.x - 1
             new_y = self.y
 
-        while not verification_direction_bordures(self, direction, environnement) and not self.verification_direction_autre_proie(new_x, new_y, tab_proie): 
+        while not verification_direction_bordures(self, direction, environnement) and not self.verification_direction_autre_proie(new_x, new_y, tab_proie) and not self.verification_direction_predateur(new_x,new_y,tab_predateur): 
             direction = randint(0, 3)
 
             if direction == 0:
@@ -71,6 +71,12 @@ class Proie:
                 return True
         return False
     
+    def verification_direction_predateur(self, new_x: int, new_y: int, tab_pred: list):
+        '''Vérifie si la proie se dirige vers une autre proie'''
+        for pred in tab_pred:
+            if pred.x == new_x and pred.y == new_y:
+                return True
+        return False
 ######################################################################################
 # Création de la classe Prédateur
 
@@ -134,7 +140,7 @@ def afficher_environnement(environnement: list):
     print()
 
 def verification_direction_bordures(self, direction: int, environnement: list):
-    '''Vérifie si l'entité se dirige vers une bordure'''
+    '''Vérifie si le déplacement est faisable par rapport aux bordures'''
     if direction == 0 and self.y + 1 >= len(environnement):
         return False
     elif direction == 1 and self.y - 1 < 0:
@@ -145,14 +151,28 @@ def verification_direction_bordures(self, direction: int, environnement: list):
         return False
     return True
 
-def trouve_coordonnees_vide(environnement: list):
-    '''Trouve des coordonnées vides dans l'environnement'''
-    x = randint(0, len(environnement[0]) - 1)
-    y = randint(0, len(environnement) - 1)
-    while environnement[y][x] != 0:
-        x = randint(0, len(environnement[0]) - 1)
-        y = randint(0, len(environnement) - 1)
-    return (x, y)
+def trouve_coordonnees_vide(environnement: list, tab_proie: list, tab_predateur: list):
+    '''Trouve une case vide qui n'est occupée ni par une proie ni par un prédateur'''
+    cases_vides = []
+    for y in range(len(environnement)):
+        for x in range(len(environnement[0])):
+            # Vérifie si la case est libre
+            est_occupe = False
+            for proie in tab_proie:
+                if proie.x == x and proie.y == y:
+                    est_occupe = True
+            
+            for predateur in tab_predateur:
+                if predateur.x == x and predateur.y == y:
+                    est_occupe = True
+            
+            if not est_occupe:
+                cases_vides.append((x, y))
+    
+    if len(cases_vides) > 0:
+        index = randint(0, len(cases_vides) - 1)
+        return cases_vides[index]
+    return None  # Retourne None si aucune case vide n'est trouvée
 
 
 def info_predateur(predateur: Predateur):
@@ -162,19 +182,33 @@ def info_predateur(predateur: Predateur):
 ######################################################################################
 # Programme principal
 
-tab_proie = [Proie(trouve_coordonnees_vide(environnement)[0], trouve_coordonnees_vide(environnement)[1], nrproie) for i in range(nb_proies_initiale)]
-tab_predateur = [Predateur(trouve_coordonnees_vide(environnement)[0], trouve_coordonnees_vide(environnement)[1], faim_predateur_initale,nrpred) for i in range(nb_predateurs_initiale)]
+
+#Creation des entités
+tab_proie = []
+tab_predateur = []
+
+for i in range(nb_proies_initiale):
+    coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
+    if coord != None:
+        tab_proie.append(Proie(coord[0], coord[1], nrproie))
+
+for j in range(nb_predateurs_initiale):
+    coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
+    if coord != None:
+        tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+
+############################
 
 for i in range(nb_itérations):
     environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 
     for proie in tab_proie:
-        proie.se_deplacer(environnement)
+        proie.se_deplacer(environnement,tab_predateur)
 
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
         predateur.se_deplacer(environnement, tab_proie)
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
-            tab_predateur.remove(pred)
+            tab_predateur.remove(predateur)
 
 
     # Affichage des entités restantes
