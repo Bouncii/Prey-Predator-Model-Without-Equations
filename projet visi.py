@@ -125,7 +125,7 @@ class Predateur:
             if proie.x == new_x and proie.y == new_y:
                 tab_proie.remove(proie)  # La proie est mangée
                 self.décompte_faim = self.n_faim
-
+                environnement[proie.y][proie.x]=0
         # Réduction de la faim si rien n'a été mangé
         self.décompte_faim -= 1  
 
@@ -152,7 +152,7 @@ def verification_direction_bordures(self, direction: int, environnement: list):
     return True
 
 def trouve_coordonnees_vide(environnement: list, tab_proie: list, tab_predateur: list):
-    '''Trouve une case vide qui n'est occupée ni par une proie ni par un prédateur'''
+    '''Trouve une case qui est vide  (elle n'est occupée ni par une proie ni par un prédateur)'''
     cases_vides = []
     for y in range(len(environnement)):
         for x in range(len(environnement[0])):
@@ -204,17 +204,12 @@ for i in range(nb_itérations):
 
     for proie in tab_proie:
         proie.se_deplacer(environnement,tab_predateur)
+        proie.afficher()
 
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
         predateur.se_deplacer(environnement, tab_proie)
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
             tab_predateur.remove(predateur)
-
-
-    # Affichage des entités restantes
-
-    for proie in tab_proie:
-        proie.afficher()
 
     for pred in tab_predateur:
         info_predateur(predateur) ### info pour Test
