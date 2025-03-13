@@ -1,4 +1,4 @@
-from random import randint
+from random import*
 
 # Paramètres de l'environnement
 largeur = 5
@@ -6,10 +6,10 @@ longueur = 5
 environnement = [[0 for j in range(largeur)] for i in range(longueur)]
 nb_itérations = 10
 
-nb_predateurs_initiale = 1
-faim_predateur_initale=5
+nb_predateurs_initiale = 2
+faim_predateur_initale = 5
 
-nb_proies_initiale = 3
+nb_proies_initiale = 7
 
 nrpred=30
 nrproie=30
@@ -28,55 +28,37 @@ class Proie:
         environnement[self.y][self.x] = 1
         
     def se_deplacer(self, environnement: list,tab_predateur):
-        new_x=0
-        new_y=0
-        direction = randint(0, 3)
-        if direction == 0:
-            new_x = self.x
-            new_y = self.y + 1
-        elif direction == 1:
-            new_x = self.x
-            new_y = self.y - 1
-        elif direction == 2:
-            new_x = self.x + 1
-            new_y = self.y
-        else:
-            new_x = self.x - 1
-            new_y = self.y
-        while not verification_direction_bordures(self, direction, environnement) and not self.verification_direction_autre_proie(new_x, new_y, tab_proie) and not self.verification_direction_predateur(new_x,new_y,tab_predateur) : 
-            direction = randint(0, 3)
-            if direction == 0:
-                new_x = self.x
-                new_y = self.y + 1
-            elif direction == 1:
-                new_x = self.x
-                new_y = self.y - 1
-            elif direction == 2:
-                new_x = self.x + 1
-                new_y = self.y
-            else:
-                new_x = self.x - 1
-                new_y = self.y
+        '''Fonction qui permet de déplacer une proie aléatoirement'''
+        tab_direction=[(0,1),(1,0),(0,-1),(-1,0)]
+        shuffle(tab_direction)
+        direction = tab_direction[0]
+        i=1
+        while (not verification_direction_possible_bordures(self, direction, environnement) or not self.verification_direction_possible_autre_proie(direction, tab_proie) or not self.verification_direction_possible_predateur(direction,tab_predateur)) and i<=3  : 
+            direction=tab_direction[i]
+            i+=1
 
+
+        if i==4:
+            direction=(0,0)#Pas de déplacement si aucune direction trouvée
 
         #Déplacement de la proie
-        self.x = new_x 
-        self.y = new_y
+        self.x += direction[0]
+        self.y += direction[1]
 
 
-    def verification_direction_autre_proie(self, new_x: int, new_y: int, tab_proie: list):
+    def verification_direction_possible_autre_proie(self, direction:tuple, tab_proie: list):
         '''Vérifie si la proie se dirige vers une autre proie'''
         for proie in tab_proie:
-            if proie.x == new_x and proie.y == new_y:
-                return True
-        return False
+            if proie.x == self.x+direction[0] and proie.y == self.y+direction[1]:
+                return False
+        return True
     
-    def verification_direction_predateur(self, new_x: int, new_y: int, tab_pred: list):
+    def verification_direction_possible_predateur(self, direction:tuple, tab_pred: list):
         '''Vérifie si la proie se dirige vers une autre proie'''
         for pred in tab_pred:
-            if pred.x == new_x and pred.y == new_y:
-                return True
-        return False
+            if pred.x == self.x+direction[0] and pred.y == self.y+direction[1]:
+                return False
+        return True
 ######################################################################################
 # Création de la classe Prédateur
 
@@ -95,32 +77,26 @@ class Predateur:
 
     def se_deplacer(self, environnement: list, tab_proie: list):
         '''Déplacement du prédateur'''
+        tab_direction=[(0,1),(1,0),(0,-1),(-1,0)]
+        shuffle(tab_direction)
+        direction = tab_direction[0]
+        i=1
+        while not verification_direction_possible_bordures(self, direction, environnement):
+            direction=tab_direction[i]
+            i+=1
+        if i==4:
+            direction=(0,0)#Pas de déplacement si aucune direction trouvée
 
-        direction = randint(0, 3)
-        while not verification_direction_bordures(self, direction, environnement):
-            direction = randint(0, 3)
-
-        if direction == 0:
-            new_x = self.x
-            new_y = self.y + 1
-        elif direction == 1:
-            new_x = self.x
-            new_y = self.y - 1
-        elif direction == 2:
-            new_x = self.x + 1
-            new_y = self.y
-        else:
-            new_x = self.x - 1
-            new_y = self.y
-
-        self.verification_mange_proie(new_x, new_y, tab_proie)
+        self.verification_mange_proie(direction, tab_proie)
 
         #Déplacement du prédateur
-        self.x = new_x 
-        self.y = new_y
+        self.x += direction[0]
+        self.y += direction[1]
 
-    def verification_mange_proie(self, new_x: int, new_y: int, tab_proie: list):
+    def verification_mange_proie(self, direction:tuple, tab_proie: list):
         '''vérifie si le prédateur mange une proie'''
+        new_x=self.x+direction[0]
+        new_y=self.y+direction[1]
         for proie in tab_proie[:]:  # Copie pour éviter modification en boucle
             if proie.x == new_x and proie.y == new_y:
                 tab_proie.remove(proie)  # La proie est mangée
@@ -139,15 +115,11 @@ def afficher_environnement(environnement: list):
         print(ligne)
     print()
 
-def verification_direction_bordures(self, direction: int, environnement: list):
+def verification_direction_possible_bordures(self, direction: int, environnement: list):
     '''Vérifie si le déplacement est faisable par rapport aux bordures'''
-    if direction == 0 and self.y + 1 >= len(environnement):
-        return False
-    elif direction == 1 and self.y - 1 < 0:
-        return False
-    elif direction == 2 and self.x + 1 >= len(environnement[0]):
-        return False
-    elif direction == 3 and self.x - 1 < 0:
+    new_x=self.x+direction[0]
+    new_y=self.y+direction[1]
+    if new_y >= len(environnement) or new_y < 0 or new_x >= len(environnement[0]) or new_x < 0:
         return False
     return True
 
@@ -176,9 +148,12 @@ def trouve_coordonnees_vide(environnement: list, tab_proie: list, tab_predateur:
 
 
 def info_predateur(predateur: Predateur):
-    '''Affiche les informations des prédateurs'''
+    '''Affiche les informations d'un predateur'''
     print(f'Prédateur: x={predateur.x}, y={predateur.y}, décompte_faim={predateur.décompte_faim}')
 
+def info_proie(predateur: Predateur):
+    '''Affiche les informations d'une proie'''
+    print(f'Prédateur: x={predateur.x}, y={predateur.y}')
 ######################################################################################
 # Programme principal
 
