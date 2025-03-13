@@ -47,14 +47,14 @@ class Proie:
 
 
     def verification_direction_possible_autre_proie(self, direction:tuple, tab_proie: list):
-        '''Vérifie si la proie se dirige vers une autre proie'''
+        '''Vérifie si la proie ne se dirige pas vers une autre proie'''
         for proie in tab_proie:
             if proie.x == self.x+direction[0] and proie.y == self.y+direction[1]:
                 return False
         return True
     
     def verification_direction_possible_predateur(self, direction:tuple, tab_pred: list):
-        '''Vérifie si la proie se dirige vers une autre proie'''
+        '''Vérifie si la proie ne se dirige pas vers un predateur'''
         for pred in tab_pred:
             if pred.x == self.x+direction[0] and pred.y == self.y+direction[1]:
                 return False
@@ -75,13 +75,13 @@ class Predateur:
         '''Affiche le prédateur sur la grille'''
         environnement[self.y][self.x] = 2
 
-    def se_deplacer(self, environnement: list, tab_proie: list):
+    def se_deplacer(self, environnement: list, tab_proie: list, tab_predateur:list):
         '''Déplacement du prédateur'''
         tab_direction=[(0,1),(1,0),(0,-1),(-1,0)]
         shuffle(tab_direction)
         direction = tab_direction[0]
         i=1
-        while not verification_direction_possible_bordures(self, direction, environnement):
+        while (not verification_direction_possible_bordures(self, direction, environnement) or not self.verification_direction_possible_autre_predateur(direction,tab_predateur)) and i<=3:
             direction=tab_direction[i]
             i+=1
         if i==4:
@@ -92,6 +92,13 @@ class Predateur:
         #Déplacement du prédateur
         self.x += direction[0]
         self.y += direction[1]
+
+    def verification_direction_possible_autre_predateur(self, direction:tuple, tab_predateur: list):
+        '''Vérifie si le prédateur ne se dirige pas vers un autre predateur'''
+        for predateur in tab_predateur:
+            if predateur.x == self.x+direction[0] and predateur.y == self.y+direction[1]:
+                return False
+        return True
 
     def verification_mange_proie(self, direction:tuple, tab_proie: list):
         '''vérifie si le prédateur mange une proie'''
@@ -182,7 +189,7 @@ for i in range(nb_itérations):
         proie.afficher()
 
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
-        predateur.se_deplacer(environnement, tab_proie)
+        predateur.se_deplacer(environnement, tab_proie,tab_predateur)
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
 
             tab_predateur.remove(predateur)
