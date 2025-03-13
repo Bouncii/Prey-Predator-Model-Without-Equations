@@ -28,6 +28,8 @@ class Proie:
         environnement[self.y][self.x] = 1
         
     def se_deplacer(self, environnement: list,tab_predateur):
+        new_x=0
+        new_y=0
         direction = randint(0, 3)
         if direction == 0:
             new_x = self.x
@@ -41,10 +43,8 @@ class Proie:
         else:
             new_x = self.x - 1
             new_y = self.y
-
-        while not verification_direction_bordures(self, direction, environnement) and not self.verification_direction_autre_proie(new_x, new_y, tab_proie) and not self.verification_direction_predateur(new_x,new_y,tab_predateur): 
+        while not verification_direction_bordures(self, direction, environnement) and not self.verification_direction_autre_proie(new_x, new_y, tab_proie) and not self.verification_direction_predateur(new_x,new_y,tab_predateur) : 
             direction = randint(0, 3)
-
             if direction == 0:
                 new_x = self.x
                 new_y = self.y + 1
@@ -209,11 +209,12 @@ for i in range(nb_itérations):
     for predateur in tab_predateur[:]:  # Copie par mesure de securité
         predateur.se_deplacer(environnement, tab_proie)
         if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
-            tab_predateur.remove(predateur)
 
-    for pred in tab_predateur:
-        info_predateur(predateur) ### info pour Test
-        pred.afficher()
+            tab_predateur.remove(predateur)
+        if predateur in tab_predateur:
+            info_predateur(predateur)
+            predateur.afficher()
+
 
 
         
