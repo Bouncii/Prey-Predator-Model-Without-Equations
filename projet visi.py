@@ -225,5 +225,6 @@ for i in range(1,nb_itérations):
 
     afficher_environnement(environnement)
 
-
+print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
+print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")
 # TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
