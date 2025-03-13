@@ -220,12 +220,10 @@ for i in range(1,nb_itérations):
         for predateur in tab_predateur:
             predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
         print("reproduction predateurs !",i)
-        
+
 ###### fin reproduction ########
 
     afficher_environnement(environnement)
 
 
 # TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
-# TODO Remplacer newx et newy par un tuple
-#Dédoublement pour apparition 
