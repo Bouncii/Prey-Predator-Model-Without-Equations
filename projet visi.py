@@ -4,15 +4,15 @@ from random import*
 largeur = 5
 longueur = 5
 environnement = [[0 for j in range(largeur)] for i in range(longueur)]
-nb_itérations = 10
+nb_itérations = 20
 
-nb_predateurs_initiale = 2
+nb_predateurs_initiale = 3
 faim_predateur_initale = 5
 
 nb_proies_initiale = 7
 
-nrpred=30
-nrproie=30
+nrpred=10
+nrproie=10
 ######################################################################################
 # Création de la classe Proie
 
@@ -161,6 +161,10 @@ def info_predateur(predateur: Predateur):
 def info_proie(predateur: Predateur):
     '''Affiche les informations d'une proie'''
     print(f'Prédateur: x={predateur.x}, y={predateur.y}')
+
+def est_iteration_apparition(i,nr_entite):
+    """Verifie si l'iteration actuelle i est une itération ou une entite se reproduit """
+    return i % nr_entite == 0
 ######################################################################################
 # Programme principal
 
@@ -181,8 +185,8 @@ for j in range(nb_predateurs_initiale):
 
 ############################
 
-for i in range(nb_itérations):
-    environnement = [[0 for j in range(largeur)] for i in range(longueur)]
+for i in range(1,nb_itérations):
+    environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
 
     for proie in tab_proie:
         proie.se_deplacer(environnement,tab_predateur)
@@ -197,9 +201,27 @@ for i in range(nb_itérations):
             info_predateur(predateur)
             predateur.afficher()
 
+###### reproduction ########
 
+    if est_iteration_apparition(i,nrproie):
+        for _ in range(len(tab_proie)):
+            coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
+            if coord != None:
+                tab_proie.append(Proie(coord[0], coord[1], nrproie))
+        for proie in tab_proie:
+            proie.afficher() # On affiche les nouvelles proies sur la grille
+        print("reproduction proies !",i)
 
+    if est_iteration_apparition(i,nrpred):
+        for _ in range(len(tab_predateur)):
+            coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
+            if coord != None:
+                tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+        for predateur in tab_predateur:
+            predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
+        print("reproduction predateurs !",i)
         
+###### fin reproduction ########
 
     afficher_environnement(environnement)
 
