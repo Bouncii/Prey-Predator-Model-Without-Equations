@@ -4,15 +4,19 @@ from random import*
 largeur = 5
 longueur = 5
 environnement = [[0 for j in range(largeur)] for i in range(longueur)]
-nb_itérations = 20
+nb_itérations = 100
 
-nb_predateurs_initiale = 3
+nb_predateurs_initiale = 5
 faim_predateur_initale = 5
 
-nb_proies_initiale = 7
+nb_proies_initiale = 15
 
 nrpred=10
 nrproie=10
+
+fichier_stat=open("stat_environnement.txt","w")
+fichier_stat.write("predateurs initiales = "+ str(nb_predateurs_initiale)+" proies initiales = " + str(nb_proies_initiale)+" nr_proie = "+str(nrproie)+" nr_pred = "+str(nrpred)+" faim predateurs = "+str(faim_predateur_initale)+" nb_iterations = "+str(nb_itérations)+"\n")
+fichier_stat.write("predateurs;proies\n")
 ######################################################################################
 # Création de la classe Proie
 
@@ -186,6 +190,7 @@ for j in range(nb_predateurs_initiale):
 ############################
 
 for i in range(1,nb_itérations):
+    fichier_stat.write(str(len(tab_predateur))+";"+str(len(tab_proie))+"\n")
     environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
 
     for proie in tab_proie:
@@ -228,3 +233,4 @@ for i in range(1,nb_itérations):
 print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
 print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")
 # TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
+# TODO à chaque i tération, sauvegarder la dimension des populations dans un fichier
