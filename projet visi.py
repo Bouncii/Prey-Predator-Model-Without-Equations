@@ -11,7 +11,7 @@ faim_predateur_initale = 5
 
 nb_proies_initiale = 15
 
-nrpred=10
+nrpred=5
 nrproie=10
 
 fichier_stat=open("stat_environnement.txt","w")
