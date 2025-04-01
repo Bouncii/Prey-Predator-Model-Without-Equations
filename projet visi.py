@@ -1,18 +1,18 @@
 from random import*
 
 # Paramètres de l'environnement
-largeur = 5
-longueur = 5
+largeur = 20
+longueur = 20
 environnement = [[0 for j in range(largeur)] for i in range(longueur)]
-nb_itérations = 100
+nb_itérations = 500
 
-nb_predateurs_initiale = 5
-faim_predateur_initale = 5
+nb_predateurs_initiale = 30
+faim_predateur_initale = 3
 
-nb_proies_initiale = 15
+nb_proies_initiale = 100
 
-nrpred=5
-nrproie=10
+nrpred=4
+nrproie=2
 
 fichier_stat=open("stat_environnement.txt","w")
 fichier_stat.write("predateurs initiales = "+ str(nb_predateurs_initiale)+" proies initiales = " + str(nb_proies_initiale)+" nr_proie = "+str(nrproie)+" nr_pred = "+str(nrpred)+" faim predateurs = "+str(faim_predateur_initale)+" nb_iterations = "+str(nb_itérations)+"\n")
@@ -190,6 +190,7 @@ for j in range(nb_predateurs_initiale):
 ############################
 
 for i in range(1,nb_itérations):
+    print(i)
     fichier_stat.write(str(len(tab_predateur))+";"+str(len(tab_proie))+"\n")
     environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
 
@@ -203,7 +204,7 @@ for i in range(1,nb_itérations):
 
             tab_predateur.remove(predateur)
         if predateur in tab_predateur:
-            info_predateur(predateur)
+            # info_predateur(predateur)
             predateur.afficher()
 
 ###### reproduction ########
@@ -215,20 +216,23 @@ for i in range(1,nb_itérations):
                 tab_proie.append(Proie(coord[0], coord[1], nrproie))
         for proie in tab_proie:
             proie.afficher() # On affiche les nouvelles proies sur la grille
-        print("reproduction proies !",i)
+        # print("reproduction proies !",i)
 
     if est_iteration_apparition(i,nrpred):
-        for _ in range(len(tab_predateur)):
-            coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
-            if coord != None:
-                tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+        for i in range(len(tab_predateur)):
+            coord=(randint(0,largeur-1),randint(0,longueur-1))
+            tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+            for proie in tab_proie:
+                if proie.x == tab_predateur[i].x and proie.y == tab_predateur[i].y:
+                    tab_proie.remove(proie)
+
         for predateur in tab_predateur:
             predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
-        print("reproduction predateurs !",i)
+        # print("reproduction predateurs !",i)
 
 ###### fin reproduction ########
 
-    afficher_environnement(environnement)
+    # afficher_environnement(environnement)
 
 print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
 print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")

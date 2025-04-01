@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 def extraction_donnees(fichier):
     population_predateurs = []
     population_proies = []
@@ -29,9 +32,20 @@ def extraction_donnees(fichier):
 
 
 
-fichier_txt = "stat_environnement_1.txt"  
+fichier_txt = "stat_environnement.txt"  
 preds, proies = extraction_donnees(fichier_txt)
+
+
+preds=np.array(preds)
+proies=np.array(proies)
+
+iterations=[i for i in range(len(proies))]
 
 print("population predateurs :", preds)
 print()
 print("population proies :", proies)
+
+
+plt.plot(iterations,proies)
+plt.plot(iterations,preds)
+plt.show()
