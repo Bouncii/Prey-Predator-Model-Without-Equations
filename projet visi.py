@@ -1,4 +1,5 @@
 from random import*
+import csv
 
 # Paramètres de l'environnement
 largeur = 20
@@ -14,9 +15,14 @@ nb_proies_initiale = 100
 nrpred=4
 nrproie=2
 
-fichier_stat=open("stat_environnement.txt","w")
-fichier_stat.write("predateurs initiales = "+ str(nb_predateurs_initiale)+" proies initiales = " + str(nb_proies_initiale)+" nr_proie = "+str(nrproie)+" nr_pred = "+str(nrpred)+" faim predateurs = "+str(faim_predateur_initale)+" nb_iterations = "+str(nb_itérations)+"\n")
-fichier_stat.write("predateurs;proies\n")
+
+
+
+csv_file=f"pred_{nb_predateurs_initiale}_proies_{nb_proies_initiale}"
+csv_file+=f"_faim_{faim_predateur_initale}"
+csv_file+=f"_nrpred_{nrpred}_nrproie_{nrproie}.csv"
+csv_columns=["population_predateurs","population_proies"]
+
 ######################################################################################
 # Création de la classe Proie
 
@@ -189,46 +195,55 @@ for j in range(nb_predateurs_initiale):
 
 ############################
 
-for i in range(1,nb_itérations):
-    print(i)
-    fichier_stat.write(str(len(tab_predateur))+";"+str(len(tab_proie))+"\n")
-    environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
+with open(csv_file, mode="w", newline="") as file:
+    writer = csv.writer(file, delimiter=";")
+    writer.writerow(csv_columns)
 
-    for proie in tab_proie:
-        proie.se_deplacer(environnement,tab_predateur)
-        proie.afficher()
+    for i in range(1,nb_itérations):
+        print(i)
 
-    for predateur in tab_predateur[:]:  # Copie par mesure de securité
-        predateur.se_deplacer(environnement, tab_proie,tab_predateur)
-        if predateur.décompte_faim == 0: #On retire de l'environneeent les prédateurs morts de faim
+        writer.writerow([len(tab_predateur), len(tab_proie)])
 
-            tab_predateur.remove(predateur)
-        if predateur in tab_predateur:
-            # info_predateur(predateur)
-            predateur.afficher()
+        environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
 
-###### reproduction ########
-
-    if est_iteration_apparition(i,nrproie):
-        for _ in range(len(tab_proie)):
-            coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
-            if coord != None:
-                tab_proie.append(Proie(coord[0], coord[1], nrproie))
         for proie in tab_proie:
-            proie.afficher() # On affiche les nouvelles proies sur la grille
-        # print("reproduction proies !",i)
+            proie.se_deplacer(environnement,tab_predateur)
+            proie.afficher()
 
-    if est_iteration_apparition(i,nrpred):
-        for i in range(len(tab_predateur)):
-            coord=(randint(0,largeur-1),randint(0,longueur-1))
-            tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+        nouveau_tab_predateurs = []
+        for predateur in tab_predateur[:]:  # Copie par mesure de securité
+            predateur.se_deplacer(environnement, tab_proie,tab_predateur)
+    
+            if predateur.décompte_faim > 0:
+                nouveau_tab_predateurs.append(predateur)  # Garde les prédateurs en vie
+            tab_predateur = nouveau_tab_predateurs 
+            
+            if predateur in tab_predateur:
+                # info_predateur(predateur)
+                predateur.afficher()
+
+    ###### reproduction ########
+
+        if est_iteration_apparition(i,nrproie):
+            for _ in range(len(tab_proie)):
+                coord = trouve_coordonnees_vide(environnement, tab_proie, tab_predateur)
+                if coord != None:
+                    tab_proie.append(Proie(coord[0], coord[1], nrproie))
             for proie in tab_proie:
-                if proie.x == tab_predateur[i].x and proie.y == tab_predateur[i].y:
-                    tab_proie.remove(proie)
+                proie.afficher() # On affiche les nouvelles proies sur la grille
+            # print("reproduction proies !",i)
 
-        for predateur in tab_predateur:
-            predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
-        # print("reproduction predateurs !",i)
+        if est_iteration_apparition(i,nrpred):
+            for i in range(len(tab_predateur)):
+                coord=(randint(0,largeur-1),randint(0,longueur-1))
+                tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+                for proie in tab_proie:
+                    if proie.x == tab_predateur[i].x and proie.y == tab_predateur[i].y:
+                        tab_proie.remove(proie)
+
+            for predateur in tab_predateur:
+                predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
+            # print("reproduction predateurs !",i)
 
 ###### fin reproduction ########
 
