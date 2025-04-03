@@ -210,17 +210,16 @@ with open(csv_file, mode="w", newline="") as file:
             proie.se_deplacer(environnement,tab_predateur)
             proie.afficher()
 
+        
         nouveau_tab_predateurs = []
-        for predateur in tab_predateur[:]:  # Copie par mesure de securité
-            predateur.se_deplacer(environnement, tab_proie,tab_predateur)
-    
-            if predateur.décompte_faim > 0:
-                nouveau_tab_predateurs.append(predateur)  # Garde les prédateurs en vie
-            tab_predateur = nouveau_tab_predateurs 
+        for predateur in tab_predateur:
+            predateur.se_deplacer(environnement, tab_proie, tab_predateur)
             
-            if predateur in tab_predateur:
-                # info_predateur(predateur)
-                predateur.afficher()
+            if predateur.décompte_faim > 0:
+                nouveau_tab_predateurs.append(predateur)  # Garde le prédateur en vie
+                predateur.afficher()  
+
+        tab_predateur = nouveau_tab_predateurs
 
     ###### reproduction ########
 
