@@ -1,6 +1,8 @@
 from random import*
 import csv
-
+from Predateur_module import Predateur
+from Proie_module import Proie
+from fct_utility import*
 # Paramètres de l'environnement
 largeur = 20
 longueur = 20
@@ -23,158 +25,7 @@ csv_file+=f"_faim_{faim_predateur_initale}"
 csv_file+=f"_nrpred_{nrpred}_nrproie_{nrproie}.csv"
 csv_columns=["population_predateurs","population_proies"]
 
-######################################################################################
-# Création de la classe Proie
 
-class Proie:
-    def __init__(self, x: int, y: int, nrproie: int):
-        self.x = x
-        self.y = y
-        self.nrproie = nrproie
-        self.reproduction = 0
-
-    def afficher(self):
-        '''Affiche la proie sur la grille'''
-        environnement[self.y][self.x] = 1
-        
-    def se_deplacer(self, environnement: list,tab_predateur):
-        '''Fonction qui permet de déplacer une proie aléatoirement'''
-        tab_direction=[(0,1),(1,0),(0,-1),(-1,0)]
-        shuffle(tab_direction)
-        direction = tab_direction[0]
-        i=1
-        while (not verification_direction_possible_bordures(self, direction, environnement) or not self.verification_direction_possible_autre_proie(direction, tab_proie) or not self.verification_direction_possible_predateur(direction,tab_predateur)) and i<=3  : 
-            direction=tab_direction[i]
-            i+=1
-
-
-        if i==4:
-            direction=(0,0)#Pas de déplacement si aucune direction trouvée
-
-        #Déplacement de la proie
-        self.x += direction[0]
-        self.y += direction[1]
-
-
-    def verification_direction_possible_autre_proie(self, direction:tuple, tab_proie: list):
-        '''Vérifie si la proie ne se dirige pas vers une autre proie'''
-        for proie in tab_proie:
-            if proie.x == self.x+direction[0] and proie.y == self.y+direction[1]:
-                return False
-        return True
-    
-    def verification_direction_possible_predateur(self, direction:tuple, tab_pred: list):
-        '''Vérifie si la proie ne se dirige pas vers un predateur'''
-        for pred in tab_pred:
-            if pred.x == self.x+direction[0] and pred.y == self.y+direction[1]:
-                return False
-        return True
-######################################################################################
-# Création de la classe Prédateur
-
-class Predateur:
-    def __init__(self, x: int, y: int, n_faim: int, nrpred:int):
-        self.x = x
-        self.y = y
-        self.nrpred=nrpred
-        self.reproduction = 0
-        self.n_faim = n_faim
-        self.décompte_faim = n_faim
-
-    def afficher(self):
-        '''Affiche le prédateur sur la grille'''
-        environnement[self.y][self.x] = 2
-
-    def se_deplacer(self, environnement: list, tab_proie: list, tab_predateur:list):
-        '''Déplacement du prédateur'''
-        tab_direction=[(0,1),(1,0),(0,-1),(-1,0)]
-        shuffle(tab_direction)
-        direction = tab_direction[0]
-        i=1
-        while (not verification_direction_possible_bordures(self, direction, environnement) or not self.verification_direction_possible_autre_predateur(direction,tab_predateur)) and i<=3:
-            direction=tab_direction[i]
-            i+=1
-        if i==4:
-            direction=(0,0)#Pas de déplacement si aucune direction trouvée
-
-        self.verification_mange_proie(direction, tab_proie)
-
-        #Déplacement du prédateur
-        self.x += direction[0]
-        self.y += direction[1]
-
-    def verification_direction_possible_autre_predateur(self, direction:tuple, tab_predateur: list):
-        '''Vérifie si le prédateur ne se dirige pas vers un autre predateur'''
-        for predateur in tab_predateur:
-            if predateur.x == self.x+direction[0] and predateur.y == self.y+direction[1]:
-                return False
-        return True
-
-    def verification_mange_proie(self, direction:tuple, tab_proie: list):
-        '''vérifie si le prédateur mange une proie'''
-        new_x=self.x+direction[0]
-        new_y=self.y+direction[1]
-        for proie in tab_proie[:]:  # Copie pour éviter modification en boucle
-            if proie.x == new_x and proie.y == new_y:
-                tab_proie.remove(proie)  # La proie est mangée
-                self.décompte_faim = self.n_faim
-                environnement[proie.y][proie.x]=0
-        # Réduction de la faim si rien n'a été mangé
-        self.décompte_faim -= 1  
-
-######################################################################################
-# Fonctions utiles
-
-def afficher_environnement(environnement: list):
-    '''Affichage de la grille'''
-    print()
-    for ligne in environnement:
-        print(ligne)
-    print()
-
-def verification_direction_possible_bordures(self, direction: int, environnement: list):
-    '''Vérifie si le déplacement est faisable par rapport aux bordures'''
-    new_x=self.x+direction[0]
-    new_y=self.y+direction[1]
-    if new_y >= len(environnement) or new_y < 0 or new_x >= len(environnement[0]) or new_x < 0:
-        return False
-    return True
-
-def trouve_coordonnees_vide(environnement: list, tab_proie: list, tab_predateur: list):
-    '''Trouve une case qui est vide  (elle n'est occupée ni par une proie ni par un prédateur)'''
-    cases_vides = []
-    for y in range(len(environnement)):
-        for x in range(len(environnement[0])):
-            # Vérifie si la case est libre
-            est_occupe = False
-            for proie in tab_proie:
-                if proie.x == x and proie.y == y:
-                    est_occupe = True
-            
-            for predateur in tab_predateur:
-                if predateur.x == x and predateur.y == y:
-                    est_occupe = True
-            
-            if not est_occupe:
-                cases_vides.append((x, y))
-    
-    if len(cases_vides) > 0:
-        index = randint(0, len(cases_vides) - 1)
-        return cases_vides[index]
-    return None  # Retourne None si aucune case vide n'est trouvée
-
-
-def info_predateur(predateur: Predateur):
-    '''Affiche les informations d'un predateur'''
-    print(f'Prédateur: x={predateur.x}, y={predateur.y}, décompte_faim={predateur.décompte_faim}')
-
-def info_proie(predateur: Predateur):
-    '''Affiche les informations d'une proie'''
-    print(f'Prédateur: x={predateur.x}, y={predateur.y}')
-
-def est_iteration_apparition(i,nr_entite):
-    """Verifie si l'iteration actuelle i est une itération ou une entite se reproduit """
-    return i % nr_entite == 0
 ######################################################################################
 # Programme principal
 
@@ -207,8 +58,8 @@ with open(csv_file, mode="w", newline="") as file:
         environnement = [[0 for _ in range(largeur)] for _ in range(longueur)]
 
         for proie in tab_proie:
-            proie.se_deplacer(environnement,tab_predateur)
-            proie.afficher()
+            proie.se_deplacer(environnement,tab_proie,tab_predateur)
+            proie.afficher(environnement)
 
         
         nouveau_tab_predateurs = []
@@ -217,7 +68,7 @@ with open(csv_file, mode="w", newline="") as file:
             
             if predateur.décompte_faim > 0:
                 nouveau_tab_predateurs.append(predateur)  # Garde le prédateur en vie
-                predateur.afficher()  
+                predateur.afficher(environnement)  
 
         tab_predateur = nouveau_tab_predateurs
 
@@ -229,7 +80,7 @@ with open(csv_file, mode="w", newline="") as file:
                 if coord != None:
                     tab_proie.append(Proie(coord[0], coord[1], nrproie))
             for proie in tab_proie:
-                proie.afficher() # On affiche les nouvelles proies sur la grille
+                proie.afficher(environnement) # On affiche les nouvelles proies sur la grille
             # print("reproduction proies !",i)
 
         if est_iteration_apparition(i,nrpred):
@@ -241,7 +92,7 @@ with open(csv_file, mode="w", newline="") as file:
                         tab_proie.remove(proie)
 
             for predateur in tab_predateur:
-                predateur.afficher() # On affiche les nouveaux prédateurs sur la grille
+                predateur.afficher(environnement) # On affiche les nouveaux prédateurs sur la grille
             # print("reproduction predateurs !",i)
 
 ###### fin reproduction ########
@@ -250,5 +101,3 @@ with open(csv_file, mode="w", newline="") as file:
 
 print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
 print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")
-# TODO Vérifier si tout les tanleaux entrée de fonctions sont bien nécéssaires
-# TODO à chaque i tération, sauvegarder la dimension des populations dans un fichier
