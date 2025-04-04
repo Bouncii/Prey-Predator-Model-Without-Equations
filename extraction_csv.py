@@ -19,7 +19,7 @@ def extraction_donnees_csv(fichier):
     return population_predateurs, population_proies
 
 
-fichier_csv = "pred_30_proies_100_faim_3_nrpred_4_nrproie_2.csv"
+fichier_csv = "pred_10_proies_50_faim_3_nrpred_4_nrproie_2.csv"
 preds, proies = extraction_donnees_csv(fichier_csv)
 
 
