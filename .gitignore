@@ -1,2 +1,4 @@
 *.txt
 *.csv
+job.sh
+*.out
