@@ -53,6 +53,8 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
         writer.writerow(csv_columns)
 
         for i in range(1,nb_itérations):
+            print(len(tab_predateur))
+
 
             writer.writerow([len(tab_predateur), len(tab_proie)])
 
@@ -86,12 +88,13 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
                 print("reproduction proies !",i)
 
             if est_iteration_apparition(i,nrpred):
-                    for i in range(len(tab_predateur)):
+                    for _ in range(len(tab_predateur)):
                         coord=trouve_coordonnees_vide(environnement,tab_proie,tab_predateur)
-                        tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
-                        for proie in tab_proie:
-                            if proie.x == tab_predateur[i].x and proie.y == tab_predateur[i].y:
-                                tab_proie.remove(proie)
+                        if coord != None:
+                            tab_predateur.append(Predateur(coord[0], coord[1], faim_predateur_initale, nrpred))
+                            for proie in tab_proie:
+                                if proie.x == coord[0] and proie.y == coord[1]:
+                                    tab_proie.remove(proie)
 
                     for predateur in tab_predateur:
                         predateur.afficher(environnement) # On affiche les nouveaux prédateurs sur la grille
@@ -105,4 +108,4 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
     print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
     print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")
     
-execution_environnement(10,10,50,40,6,0,5,5)
+execution_environnement(10,10,50,40,6,0,2,5)
