@@ -1,4 +1,4 @@
-# Prey Predator Model Without Equation
+# Prey Predator Model Without Equations
 
 ## Purpose
 The goal of this project is to make a simulated prey and predator environment and analyze the result for various parameters. (we want to obtain the same results as [Lotka–Volterra](https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations))
