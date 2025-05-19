@@ -85,7 +85,7 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
                         tab_proie.append(Proie(coord[0], coord[1], nrproie))
                 for proie in tab_proie:
                     proie.afficher(environnement) # On affiche les nouvelles proies sur la grille
-                print("reproduction proies !",i)
+                # print("reproduction proies !",i)
 
             if est_iteration_apparition(i,nrpred):
                     for _ in range(len(tab_predateur)):
@@ -98,14 +98,14 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
 
                     for predateur in tab_predateur:
                         predateur.afficher(environnement) # On affiche les nouveaux prédateurs sur la grille
-                    print("reproduction predateurs !",i)
+                    # print("reproduction predateurs !",i)
             
 
     ###### fin reproduction ########
 
-            afficher_environnement(environnement)
+            # afficher_environnement(environnement)
 
     print("les proies sont au nombre de:",len(tab_proie),"à la fin de la simulation")
     print("les predateurs sont au nombre de:",len(tab_predateur),"à la fin de la simulation")
     
-execution_environnement(10,10,50,40,6,0,2,5)
+execution_environnement(largeur,longueur,nb_itérations,nb_predateurs_initiale,faim_predateur_initale,nb_proies_initiale,nrpred,nrproie)
