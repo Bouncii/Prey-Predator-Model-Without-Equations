@@ -61,7 +61,7 @@ def execution_environnement(largeur:int,longueur:int,nb_itérations:int,nb_preda
             for proie in tab_proie:
                 proie.se_deplacer(environnement,tab_proie,tab_predateur)
                 proie.afficher(environnement)
-
+            
             
             nouveau_tab_predateurs = []
             for predateur in tab_predateur:
